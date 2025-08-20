@@ -93,5 +93,7 @@ MIT License [©frosmoon](https://github.com/frosmoon) | [My Portfolio](https://b
 
 # Footer 
 [https://github.com/frosmoon/ProgressAlert.js](https://github.com/frosmoon/ProgressAlert.js)
+
 Made with ❤️ By Luis (frosmoon) at [https://github.com/frosmoon](https://github.com/frosmoon)
+
 Website: [https://byluis.studio](https://byluis.studio)
