@@ -1,4 +1,4 @@
-class ProgressBar {
+class ProgressAlert {
     static SUCCESS = "success";
     static FAIL = "fail";
     static NEUTRAL = "neutral";
@@ -81,9 +81,9 @@ class ProgressBar {
     updateProgressWithSteps(type) {
         if (!this.canContinue()) return false;
 
-        const typeC = type === ProgressBar.SUCCESS ? this.progressColorSuccess :
-            type === ProgressBar.FAIL ? this.progressColorError :
-            type === ProgressBar.NEUTRAL ? this.progressColorNeutral :
+        const typeC = type === ProgressAlert.SUCCESS ? this.progressColorSuccess :
+            type === ProgressAlert.FAIL ? this.progressColorError :
+            type === ProgressAlert.NEUTRAL ? this.progressColorNeutral :
             this.progressColor;
 
         this.setProgress(this.progress + this.stepSize, typeC);
