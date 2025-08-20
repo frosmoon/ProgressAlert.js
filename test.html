@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test ProgressAlert.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./ProgressAlert.js"></script>
+</head>
+
+<body>
+    <script>
+        const steps = 100;
+        const alert = new ProgressAlert({
+            title: "Uploading File",
+            message: "Please wait while we process your data...",
+            type: "modal", // "modal" or "toast"
+            progressColorSuccess: 'lime',
+            progressColorError: 'red',
+            progressColorNeutral: 'orange',
+            progressBackgroundColor: 'darkblue',
+            steps,
+            onFinish: (_alert) => console.log("Upload finished!"),
+        });
+
+        alert.showProgressAlert();
+        alert.demo();
+    </script>
+</body>
+
+</html>

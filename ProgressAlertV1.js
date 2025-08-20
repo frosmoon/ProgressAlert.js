@@ -2,11 +2,6 @@ class ProgressAlert {
     static SUCCESS = "success";
     static FAIL = "fail";
     static NEUTRAL = "neutral";
-    static VERSION = 'V3';
-
-    progressSegments = []; // store each segment div
-    isPaused = false;
-
     constructor(config = {}) {
         const defaultConfig = {
             steps: 5,
@@ -19,14 +14,13 @@ class ProgressAlert {
             progressBackgroundColor: 'darkblue',
             onFinish: null,
             onOpen: null,
-            type: 'modal',
+            type: 'alert',
             position: "center",
             showCancelButton: false,
             cancelButtonText: "Cancel!",
-            closeTimeout: 1300,
-            stepDuration: 300
+            closeTimeout: 1300
         };
-        this.stepDuration = config.stepDuration ?? defaultConfig.stepDuration; // ms
+
         this.steps = config.steps ?? defaultConfig.steps;
         this.title = config.title ?? defaultConfig.title;
         this.message = config.message ?? defaultConfig.message;
@@ -47,22 +41,20 @@ class ProgressAlert {
         this.progressBar = document.createElement('div');
         this.closeTimeout = config.closeTimeout ?? defaultConfig.closeTimeout;
         this.progress = 0;
-        this.currentStep = 0;
-        this.segments = [];
         this.stepSize = 100 / this.steps;
         this.miniStepSize = this.stepSize / 10;
         this.closed = false;
+        this.version = 'V3';
         this.status = 'created';
-        this.finishedCalled = false;
     }
 
     setProgress(progress, typeC) {
-        if (progress < 0 || progress >= 100) {
-            this.endProgress();
+        if (progress < 0 || progress > 101) {
             return false;
         }
 
-        this.animateTo(20, 1000); // animate from current progress to 20 over 1s
+        this.progress = progress;
+        this.updateProgress(typeC);
     }
 
     updateProgress(typeC) {
@@ -73,110 +65,29 @@ class ProgressAlert {
             this.progressBar.style.backgroundColor = typeC;
         }
 
+        if (this.progress >= 90) {
+            if (this.progressBar) this.progressBar.style.borderRadius = '40px';
+            if (this.progressContainer) this.progressContainer.style.borderRadius = '40px';
+        }
+
         if (this.progress >= 100) {
             this.endProgress();
             return;
         }
+
+        this.updated('progress');
     }
 
     updateProgressWithSteps(type) {
-        if (!this.canContinue() || this.isPaused) return false;
+        if (!this.canContinue()) return false;
 
-        if (!this.isOpen())
-            this.showProgressAlert();
+        const typeC = type === ProgressAlert.SUCCESS ? this.progressColorSuccess :
+            type === ProgressAlert.FAIL ? this.progressColorError :
+            type === ProgressAlert.NEUTRAL ? this.progressColorNeutral :
+            this.progressColor;
 
-        this.currentStep++;
-        this.addProgressSegment(type, this.stepSize);
+        this.setProgress(this.progress + this.stepSize, typeC);
     }
-
-    addProgressSegment(type, size) {
-        let color;
-        if (type === ProgressAlert.SUCCESS) {
-            color = this.progressColorSuccess;
-        } else if (type === ProgressAlert.FAIL) {
-            color = this.progressColorError;
-        } else if (type === ProgressAlert.NEUTRAL) {
-            color = this.progressColorNeutral;
-        } else {
-            color = this.progressColor;
-        }
-
-
-        if (!this.segments) this.segments = [];
-
-        // Push with placeholder size (we’ll animate into it)
-        this.segments.push({ color, size });
-
-        const targetProgress = Math.min(this.progress + size, 100);
-
-        // Animate smoothly
-        this.animateTo(targetProgress, this.stepDuration);
-
-        if (targetProgress >= 100) {
-            // Delay finish until animation is done
-            setTimeout(() => this.endProgress(), this.stepDuration + 10);
-        }
-    }
-
-
-    renderSegments() {
-        let gradientParts = [];
-        let cumulative = 0;
-
-        for (let i = 0; i < this.segments.length; i++) {
-            const seg = this.segments[i];
-            let start = cumulative;
-            let end = cumulative + seg.size;
-
-            start = +(start.toFixed(4));
-
-            if (i < this.segments.length - 1) {
-                // fully completed segment
-                end = +(end.toFixed(4));
-                gradientParts.push(`${seg.color} ${start}% ${end}%`);
-                cumulative = end;
-            } else {
-                // active segment: only draw up to this.progress
-                end = Math.min(this.progress, end);
-                end = +(end.toFixed(4));
-                gradientParts.push(`${seg.color} ${start}% ${end}%`);
-                cumulative = end;
-            }
-        }
-
-        this.progressBar.style.width = this.progress + "%";
-        this.progressBar.style.background = `linear-gradient(to right, ${gradientParts.join(", ")})`;
-    }
-
-
-    animateTo(nextProgress, duration = 500) {
-        if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
-
-        const start = this.progress;
-        const end = Math.min(nextProgress, 100);
-        const startTime = performance.now();
-
-        const step = (now) => {
-            const elapsed = now - startTime;
-            const ratio = Math.min(elapsed / duration, 1);
-
-            // Smooth interpolation
-            this.progress = start + (end - start) * ratio;
-
-            this.renderSegments();
-
-            if (ratio < 1) {
-                this.animationFrame = requestAnimationFrame(step);
-            } else {
-                this.progress = end;
-                this.renderSegments();
-                this.animationFrame = null;
-            }
-        };
-
-        this.animationFrame = requestAnimationFrame(step);
-    }
-
 
     simulateProgress() {
         const progressInterval = setInterval(() => {
@@ -184,7 +95,6 @@ class ProgressAlert {
 
             if (this.progress >= 100) {
                 clearInterval(progressInterval);
-                this.endProgress();
             }
         }, 50);
     }
@@ -193,15 +103,16 @@ class ProgressAlert {
         let l = 0;
         const i = setInterval(() => {
             l++;
-            this.updateMessage(`Progress: ${Math.floor(this.progress + this.stepSize)}%`);
-            this.updateProgressWithSteps([ProgressAlert.SUCCESS, ProgressAlert.NEUTRAL, ProgressAlert.FAIL][Math.floor(Math.random() * 3)])
-            if (l >= this.steps) clearInterval(i);
+            this.updateProgressWithSteps('success');
+            this.updateMessage(`Progress: ${this.progress}%`);
+            if (l === 10) clearInterval(i);
         }, 1000);
     }
 
     updateMessage(text) {
         if (!text) return;
         this.messageContainer.innerText = text;
+        this.updated('message');
     }
 
     updateSteps(stepsS) {
@@ -210,13 +121,14 @@ class ProgressAlert {
         this.steps = stepsS;
         this.stepSize = 100 / this.steps;
         this.miniStepSize = this.stepSize / 10;
+        this.updated('steps');
     }
 
-    showProgressAlert() {
+    showProgressBar() {
         if (this.status !== 'created') return;
 
         const id = 'progress-dialog';
-        if (!document.querySelector('#progress-dialog')) {
+        if (!document.querySelector('#' + id)) {
             const html = `
         <div>
             <p id="message">${this.message || 'Please wait...'}</p>
@@ -238,7 +150,7 @@ class ProgressAlert {
              .progress-bar {
                 height: 30px;
                 width: 0%;
-                border-radius: 40px;
+                border-radius: 40px 10px 10px 40px;
                 transition: border-radius 0.5s;
             }
             .progress {
@@ -251,11 +163,10 @@ class ProgressAlert {
 
         this.progressBar = document.querySelector('.progress-bar');
         this.progressContainer = document.querySelector('.progress');
-
         this.messageContainer = document.querySelector('#message');
 
-        if (typeof Swal === 'undefined' || !Swal) {
-            throw new Error("SweetAlert2 (Swal) is not defined. Are you sure you have included its scripts?");
+        if (typeof Swal === 'undefined') {
+            throw new Error("SweetAlert2 (Swal) is not defined.");
         }
 
         this.alertSwal = Swal.mixin({
@@ -266,7 +177,6 @@ class ProgressAlert {
             showCancelButton: !!this.showCancelButton,
             showConfirmButton: false,
             allowEscapeKey: false,
-            allowOutsideClick: this.allowOutsideClick,
             willClose: () => {
                 this.endProgress('user');
             },
@@ -275,6 +185,9 @@ class ProgressAlert {
             }
         });
 
+        if (this.type !== 'toast') {
+            this.alertSwal.allowOutsideClick = this.allowOutsideClick;
+        }
 
         if (this.showCancelButton) {
             this.alertSwal.cancelButtonText = this.cancelButtonText;
@@ -287,16 +200,16 @@ class ProgressAlert {
     reset() {
         this.closed = false;
         this.progress = 0;
-        this.finishedCalled = false;
         this.stepSize = 100 / this.steps;
         this.miniStepSize = this.stepSize / 10;
-        this.isPaused = false;
-        this.segments = []
-        if (this.progressBar) {
-            this.progressBar.style.width = "0%";
-            this.progressBar.style.background = this.progressColor;
+        this.status = 'recreated';
+        this.updated();
+    }
+
+    updated(from) {
+        if (!this.isOpen() && !this.showCancelButton) {
+            this.showProgressBar();
         }
-        this.status = "created";
     }
 
     canContinue() {
@@ -308,35 +221,32 @@ class ProgressAlert {
     }
 
     isOpen() {
-        return this.alertSwal.isVisible() || false;
+        return this.alertSwal?.isVisible?.() || false;
     }
 
     onOpened() {
         this.status = 'opened';
+        this.updated('onOpen');
         if (typeof this.onOpen === 'function')
             this.onOpen();
     }
 
-    endProgress() {
-        if (this.finishedCalled) return;
-        this.finishedCalled = true;
+    isReallyClosed(from) {
+        return this.canContinue() && !this.showCancelButton;
+    }
+
+    endProgress(from) {
+        this.updated('endProgress');
+
         setTimeout(() => {
             this.alertSwal.close(); // Close the dialog when progress reaches 100%
+            if (typeof this.onFinish === 'function') {
+                this.onFinish();
+            }
             this.closed = true;
             this.status = 'closed';
-            if (typeof this.onFinish === 'function')
-                this.onFinish(this);
         }, this.closeTimeout);
     }
-
-    stop() {
-        this.isPaused = true;
-    }
-
-    resume() {
-        this.isPaused = false;
-    }
-
 }
 
 const iniconfig = [
@@ -350,4 +260,4 @@ const iniconfig = [
     "border-radius:8px"
 ].join(' ;');
 
-console.log("%cProgressAlert version " + ProgressAlert.VERSION, iniconfig);
+console.log("%cProgress API V3", iniconfig);

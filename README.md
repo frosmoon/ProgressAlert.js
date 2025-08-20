@@ -35,7 +35,7 @@ const alert = new ProgressAlert({
   onFinish: () => console.log("Upload finished!"),
 });
 
-alert.showProgressBar();
+alert.showProgressAlert();
 
 // Simulate progress
 alert.demo();
@@ -84,7 +84,7 @@ alert.simulateProgress(); // auto-increments until 100%
   type: "toast",
 });
 
-demo.showProgressBar();
+demo.showProgressAlert();
 demo.demo();
 ```
 
