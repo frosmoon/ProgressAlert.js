@@ -4,8 +4,13 @@ class ProgressAlert {
     static NEUTRAL = "neutral";
     static VERSION = 'V3';
 
-    progressSegments = []; // store each segment div
     isPaused = false;
+    segments = [];
+    progress = 0;
+    currentStep = 0;
+    closed = false;
+    status = 'created';
+    finishedCalled = false;
 
     constructor(config = {}) {
         const defaultConfig = {
@@ -46,14 +51,8 @@ class ProgressAlert {
         this.cancelButtonText = config.cancelButtonText ?? defaultConfig.cancelButtonText;
         this.progressBar = document.createElement('div');
         this.closeTimeout = config.closeTimeout ?? defaultConfig.closeTimeout;
-        this.progress = 0;
-        this.currentStep = 0;
-        this.segments = [];
         this.stepSize = 100 / this.steps;
         this.miniStepSize = this.stepSize / 10;
-        this.closed = false;
-        this.status = 'created';
-        this.finishedCalled = false;
     }
 
     setProgress(progress, typeC) {

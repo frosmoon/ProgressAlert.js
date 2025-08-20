@@ -68,7 +68,7 @@ alert.simulateProgress(); // auto-increments until 100%
 | `progressColorError`      | `string`  | `"red"`            | Color when fail step is used         |
 | `progressColorNeutral`    | `string`  | `"orange"`         | Neutral color                        |
 | `progressBackgroundColor` | `string`  | `"darkblue"`       | Background track color               |
-| `type`                    | `string`  | `"alert"`          | `"alert"` (modal) or `"toast"`       |
+| `type`                    | `string`  | `"alert"`          | `"modal"` or `"toast"`       |
 | `position`                | `string`  | `"center"`         | Position for toast mode              |
 | `showCancelButton`        | `boolean` | `false`            | Show cancel button                   |
 | `cancelButtonText`        | `string`  | `"Cancel!"`        | Text for cancel button               |

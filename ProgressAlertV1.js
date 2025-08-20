@@ -83,8 +83,8 @@ class ProgressAlert {
 
         const typeC = type === ProgressAlert.SUCCESS ? this.progressColorSuccess :
             type === ProgressAlert.FAIL ? this.progressColorError :
-            type === ProgressAlert.NEUTRAL ? this.progressColorNeutral :
-            this.progressColor;
+                type === ProgressAlert.NEUTRAL ? this.progressColorNeutral :
+                    this.progressColor;
 
         this.setProgress(this.progress + this.stepSize, typeC);
     }
@@ -101,12 +101,12 @@ class ProgressAlert {
 
     demo() {
         let l = 0;
-        const i = setInterval(() => {
-            l++;
-            this.updateProgressWithSteps('success');
-            this.updateMessage(`Progress: ${this.progress}%`);
-            if (l === 10) clearInterval(i);
-        }, 1000);
+        while (l++ < this.steps) {
+            setTimeout(() => {
+                this.updateProgressWithSteps('success');
+                this.updateMessage(`Progress: ${this.progress}%`);
+            }, l * 500);
+        }
     }
 
     updateMessage(text) {
@@ -124,7 +124,7 @@ class ProgressAlert {
         this.updated('steps');
     }
 
-    showProgressBar() {
+    showProgressAlert() {
         if (this.status !== 'created') return;
 
         const id = 'progress-dialog';
@@ -208,7 +208,7 @@ class ProgressAlert {
 
     updated(from) {
         if (!this.isOpen() && !this.showCancelButton) {
-            this.showProgressBar();
+            this.showProgressAlert();
         }
     }
 
