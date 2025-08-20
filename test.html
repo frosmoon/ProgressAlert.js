@@ -13,22 +13,53 @@
     <title>Test ProgressAlert.js</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./ProgressAlert.js"></script>
+    <style>
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 95%;
+            height: 100px;
+            border-radius: 10px 10px 0 0;
+            background-color: whitesmoke;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            line-height: 25px;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body>
     <script>
-        const steps = 100;
+        const steps = 5;
         const alert = new ProgressAlert({
             title: "Uploading File",
             message: "Please wait while we process your data...",
             type: "modal", // "modal" or "toast"
             steps,
             onFinish: (_alert) => console.log("Upload finished!"),
+            allowOutsideClick: true
         });
 
         alert.showProgressAlert();
         alert.demo();
     </script>
+
+    <footer>
+        <div>
+            <a href="https://github.com/frosmoon/ProgressAlert.js">Github:
+                https://github.com/frosmoon/ProgressAlert.js</a>
+            <br>
+            Made with ❤️ By Luis (frosmoon) at <a href="https://github.com/frosmoon">https://github.com/frosmoon</a>
+            <br>
+            Website: <a href="https://byluis.studio">https://byluis.studio</a>
+        </div>
+    </footer>
 </body>
 
 </html>

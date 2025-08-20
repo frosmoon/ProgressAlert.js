@@ -1,3 +1,8 @@
+/* 
+       https://github.com/frosmoon/ProgressAlert.js
+       Made with ❤️ By Luis (frosmoon) at https://github.com/frosmoon/
+       Website: https://byluis.studio 
+*/
 class ProgressAlert {
     static SUCCESS = "success";
     static FAIL = "fail";

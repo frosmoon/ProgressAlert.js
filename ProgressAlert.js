@@ -1,3 +1,8 @@
+/* 
+       https://github.com/frosmoon/ProgressAlert.js
+       Made with ❤️ By Luis (frosmoon) at https://github.com/frosmoon/
+       Website: https://byluis.studio 
+*/
 class ProgressAlert {
     static SUCCESS = "success";
     static FAIL = "fail";
@@ -43,7 +48,7 @@ class ProgressAlert {
         this.onFinish = config.onFinish ?? defaultConfig.onFinish;
         this.onOpen = config.onOpen ?? defaultConfig.onOpen;
         this.type = config.type ?? defaultConfig.type;
-        this.allowOutsideClick = (this.type === 'modal' ? false : true);
+        this.allowOutsideClick = config.allowOutsideClick ?? false;
         this.position = this.type === 'toast' ?
             (config.position !== 'top-left' ? config.position ?? defaultConfig.position : defaultConfig.position) :
             defaultConfig.position;
